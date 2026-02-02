@@ -13,11 +13,8 @@ const { config, translations } = Astro.props;
 // Generar tags SEO
 const seoTags = generateSEOTags(config);
 
-// Generar URLs alternativas
-const alternateUrls = generateAlternateUrls(
-  Astro.url.pathname.replace(`/${config.lang}`, '') || '/',
-  config.lang
-);
+// Generate alternate URLs (full pathname: /home or /es/home)
+const alternateUrls = generateAlternateUrls(Astro.url.pathname, config.lang);
 
 // Generar JSON-LD
 const jsonLd = generateJSONLD(config);

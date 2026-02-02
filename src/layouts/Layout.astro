@@ -50,7 +50,7 @@ const keywords = customKeywords || (currentLang === 'es'
   ? "levantamiento LiDAR, mapeo con drones, levantamientos topográficos, informes catastrales, análisis territorial, Costa Rica, mapeo de precisión, modelado 3D, topografía"
   : "LiDAR surveying, drone mapping, topographic surveys, cadastral reports, territorial analysis, Costa Rica, precision mapping, 3D modeling, land surveying");
 
-// Configuración SEO
+// SEO configuration (pathname for canonical and alternates)
 const seoConfig: SEOConfig = {
   title,
   description,
@@ -58,6 +58,7 @@ const seoConfig: SEOConfig = {
   ogImage,
   ogType,
   canonical,
+  pathname: Astro.url.pathname,
   lang: currentLang
 };
 ---

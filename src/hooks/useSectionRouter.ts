@@ -12,21 +12,17 @@ export const useSectionRouter = (
   const [activeSection, setActiveSection] = useState<string>(initialSection);
 
   /**
-   * Obtener sección desde la URL
+   * Get section from URL: /home, /mission, /es/home -> home, mission, home
    */
   const getSectionFromUrl = useCallback((): string => {
     if (typeof window === 'undefined') return 'home';
     
     const path = window.location.pathname;
-    // Extraer la sección: /en/services -> services
     const parts = path.split('/').filter(Boolean);
-    
-    // Si hay una sección después del idioma, usarla
-    if (parts.length > 1) {
-      return parts[1];
-    }
-    
-    return 'home';
+    // Only Spanish has a prefix: /es/home -> parts[1]; /home -> parts[0]
+    if (parts[0] === 'es' && parts.length > 1) return parts[1];
+    if (parts[0] && parts[0] !== 'en') return parts[0]; // inglés: /home, /mission
+    return parts[1] || 'home'; // /en/home (legacy) -> home
   }, []);
 
   /**
@@ -34,8 +30,8 @@ export const useSectionRouter = (
    */
   const navigateToSection = useCallback(
     (sectionId: string, smooth: boolean = true) => {
-      // Actualizar URL sin recargar
-      const newUrl = `/${currentLang}/${sectionId}`;
+      // English: /home, /mission. Spanish: /es/home, /es/mission (without /en)
+      const newUrl = currentLang === 'es' ? `/es/${sectionId}` : `/${sectionId}`;
       window.history.pushState({ section: sectionId }, '', newUrl);
       
       // Hacer scroll a la sección
@@ -90,8 +86,7 @@ export const useSectionRouter = (
           // Solo actualizar si es diferente
           setActiveSection((prev) => {
             if (prev !== sectionId) {
-              // Actualizar URL sin agregar al historial
-              const newUrl = `/${currentLang}/${sectionId}`;
+              const newUrl = currentLang === 'es' ? `/es/${sectionId}` : `/${sectionId}`;
               window.history.replaceState({ section: sectionId }, '', newUrl);
               return sectionId;
             }

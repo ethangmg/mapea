@@ -1,4 +1,4 @@
 ---
-// Redirigir /en a /en/home para mantener consistencia
-return Astro.redirect('/en/home', 301);
+// Compatibility: /en redirects to /home (English without prefix)
+return Astro.redirect('/home', 301);
 ---

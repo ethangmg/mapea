@@ -1,7 +1,4 @@
 ---
-import { getCurrentLanguage } from '../utils/i18n-astro';
-
-// Detectar idioma y redirigir a la versión con sección
-const currentLang = getCurrentLanguage(Astro.url) as 'en' | 'es';
-return Astro.redirect(`/${currentLang}/home`, 301);
+// English by default: root redirects to /home (English without prefix)
+return Astro.redirect('/home', 301);
 ---

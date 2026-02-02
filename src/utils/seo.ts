@@ -7,6 +7,8 @@ export interface SEOConfig {
   ogImage?: string;
   ogType?: string;
   canonical?: string;
+  /** Current path (e.g. /home or /es/home). If canonical is not passed, baseUrl + pathname is used. */
+  pathname?: string;
   lang: SupportedLanguage;
   alternateUrls?: Record<SupportedLanguage, string>;
 }
@@ -53,8 +55,8 @@ export function generateSEOTags(config: SEOConfig) {
       image: imageUrl
     },
     alternate: alternateUrls || {
-      en: `${baseUrl}/en`,
-      es: `${baseUrl}/es`
+      en: `${baseUrl}/home`,
+      es: `${baseUrl}/es/home`
     }
   };
 }
@@ -179,20 +181,19 @@ export function detectUserLanguage(request: Request): SupportedLanguage {
 }
 
 /**
- * Genera URLs alternativas para hreflang
+ * Genera URLs alternativas para hreflang.
+ * Inglés sin prefijo (/home), español con /es (/es/home).
  */
 export function generateAlternateUrls(
   currentPath: string,
   currentLang: SupportedLanguage
 ): Record<SupportedLanguage, string> {
   const baseUrl = 'https://mapea.cr';
-  const languages: SupportedLanguage[] = ['en', 'es'];
-  
-  const alternateUrls: Record<SupportedLanguage, string> = {} as Record<SupportedLanguage, string>;
-  
-  for (const lang of languages) {
-    alternateUrls[lang] = `${baseUrl}/${lang}${currentPath}`;
-  }
-  
-  return alternateUrls;
+  // Ruta sin prefijo de idioma: /es/home -> /home, /home -> /home
+  const basePath = currentPath.replace(/^\/es/, '').replace(/^\/en/, '') || '/';
+  const sectionPath = basePath === '/' ? '/home' : basePath;
+  return {
+    en: `${baseUrl}${sectionPath}`,
+    es: `${baseUrl}/es${sectionPath}`,
+  };
 }

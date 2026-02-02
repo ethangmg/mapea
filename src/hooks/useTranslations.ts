@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { SupportedLanguage } from '../i18n/types';
+import { getLocalizedUrl } from '../utils/i18n-astro';
 
 /**
  * Hook simple para manejar traducciones sin dependencias externas
@@ -19,7 +20,7 @@ export const useTranslations = (translations: Record<string, any>, currentLang: 
       if (value && typeof value === 'object' && k in value) {
         value = value[k];
       } else {
-        return key; // Devolver la clave si no se encuentra
+        return key; // Return the key if not found
       }
     }
     
@@ -27,28 +28,15 @@ export const useTranslations = (translations: Record<string, any>, currentLang: 
   }, [translations]);
 
   /**
-   * Cambiar idioma
+   * Change language: English without prefix (/home), Spanish with /es (/es/home).
    */
   const changeLanguage = useCallback((newLang: SupportedLanguage) => {
     setLanguage(newLang);
     
-    // Persistir en localStorage
     if (typeof window !== 'undefined') {
       localStorage.setItem('mapea-language', newLang);
-      
-      // Navegar a la página del idioma correspondiente
       const currentPath = window.location.pathname;
-      let newPath: string;
-      
-      if (currentPath.startsWith('/en') || currentPath.startsWith('/es')) {
-        // Reemplazar el prefijo de idioma existente
-        newPath = currentPath.replace(/^\/[a-z]{2}/, `/${newLang}`);
-      } else {
-        // Agregar prefijo de idioma
-        newPath = `/${newLang}${currentPath}`;
-      }
-      
-      // Navegar a la nueva URL
+      const newPath = getLocalizedUrl(newLang, currentPath);
       window.location.href = newPath;
     }
   }, []);

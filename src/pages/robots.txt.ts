@@ -15,8 +15,8 @@ Disallow: /private/
 Disallow: /_astro/
 Disallow: /node_modules/
 
-# Allow all language versions
-Allow: /en/
+# English (default): /, /home, /mission, etc. Spanish: /es/
+Allow: /
 Allow: /es/
 
 # Crawl delay for respectful crawling

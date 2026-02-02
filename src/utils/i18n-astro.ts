@@ -33,25 +33,15 @@ export async function getTranslations(
 }
 
 /**
- * Obtiene el idioma actual basado en la URL
+ * Get current language based on the URL.
+ * Only /es has a prefix; English is the default URL (without /en).
  * @param url - URL de Astro
  * @returns Idioma actual
  */
 export function getCurrentLanguage(url: URL): SupportedLanguage {
   const pathname = url.pathname;
   
-  // Verificar si la URL contiene el prefijo de idioma
   if (pathname.startsWith('/es')) return 'es';
-  if (pathname.startsWith('/en')) return 'en';
-  
-  // Verificar parámetros de consulta
-  const langParam = url.searchParams.get('lang');
-  if (langParam === 'es' || langParam === 'en') {
-    return langParam as SupportedLanguage;
-  }
-  
-  // En server-side, usar inglés por defecto
-  // No acceder a window, localStorage o navigator en server-side
   return 'en';
 }
 
@@ -80,18 +70,24 @@ export async function getAllTranslations(lang: SupportedLanguage): Promise<Recor
   return translations;
 }
 
+export function getPathWithoutLangPrefix(pathname: string): string {
+  if (pathname.startsWith('/es')) return pathname.slice(3) || '/';
+  if (pathname.startsWith('/en')) return pathname.slice(3) || '/';
+  return pathname;
+}
+
 /**
- * Genera la URL para un idioma específico
+ * Generate the URL for a specific language.
+ * English: without prefix (e.g. /home). Spanish: with /es (e.g. /es/home).
  * @param lang - Idioma
- * @param pathname - Ruta actual
- * @returns URL con el prefijo de idioma
+ * @param pathname - Current path (may have /es or not)
+ * @returns Localized URL
  */
 export function getLocalizedUrl(lang: SupportedLanguage, pathname: string): string {
-  // Si ya tiene prefijo de idioma, reemplazarlo
-  const cleanPath = pathname.replace(/^\/[a-z]{2}/, '');
-  
-  // Agregar prefijo de idioma
-  return `/${lang}${cleanPath}`;
+  const cleanPath = getPathWithoutLangPrefix(pathname) || '/';
+  const sectionPath = cleanPath === '/' ? '/home' : cleanPath;
+  if (lang === 'es') return `/es${sectionPath}`;
+  return sectionPath;
 }
 
 /**

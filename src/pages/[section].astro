@@ -1,0 +1,68 @@
+---
+import { Header } from '../components/layout/Header.tsx';
+import { Home } from '../components/sections/Home.tsx';
+import Mission from '../components/sections/Mission.astro';
+import Services from '../components/sections/Services.astro';
+import Clients from '../components/sections/Clients.astro';
+import { Contact } from '../components/sections/Contact.tsx';
+import Footer from '../components/sections/Footer.astro';
+import Layout from '../layouts/Layout.astro';
+import { SEO_DATA } from '../data/constants';
+import { getTranslations } from '../utils/i18n-astro';
+
+export async function getStaticPaths() {
+  return ['home', 'mission', 'services', 'contact'].map((section) => ({
+    params: { section },
+  }));
+}
+
+const currentLang = 'en' as const;
+const { section } = Astro.params;
+
+const commonTranslations = await getTranslations(currentLang, 'common');
+const homeTranslations = await getTranslations(currentLang, 'home');
+const contactTranslations = await getTranslations(currentLang, 'contact');
+const navigationTranslations = await getTranslations(currentLang, 'navigation');
+
+const currentSection = section || 'home';
+const seoData = SEO_DATA[currentSection as keyof typeof SEO_DATA] || SEO_DATA.home;
+---
+
+<Layout
+  title={seoData.title}
+  description={seoData.description}
+  keywords={seoData.keywords}
+  ogImage="/assets/mapea-og-image.jpg"
+  section={currentSection}
+  lang={currentLang}
+>
+  <div class="min-h-screen">
+    <Header
+      translations={commonTranslations}
+      navigationTranslations={navigationTranslations}
+      currentLang={currentLang}
+      client:load
+    />
+
+    <main>
+      <Home
+        translations={homeTranslations}
+        commonTranslations={commonTranslations}
+        currentLang={currentLang}
+        client:visible
+      />
+
+      <Mission lang={currentLang} />
+      <Services lang={currentLang} />
+
+      <Contact
+        translations={contactTranslations}
+        commonTranslations={commonTranslations}
+        currentLang={currentLang}
+        client:visible
+      />
+    </main>
+
+    <Footer lang={currentLang} />
+  </div>
+</Layout>
