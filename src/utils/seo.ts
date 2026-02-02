@@ -30,7 +30,8 @@ export function generateSEOTags(config: SEOConfig) {
   } = config;
 
   const baseUrl = 'https://mapea.cr';
-  const canonicalUrl = canonical || `${baseUrl}/${lang}`;
+  const pathname = config.pathname;
+  const canonicalUrl = canonical || (pathname != null ? `${baseUrl}${pathname}` : `${baseUrl}/${lang === 'es' ? 'es/home' : 'home'}`);
   const imageUrl = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`;
 
   return {
@@ -189,7 +190,7 @@ export function generateAlternateUrls(
   currentLang: SupportedLanguage
 ): Record<SupportedLanguage, string> {
   const baseUrl = 'https://mapea.cr';
-  // Ruta sin prefijo de idioma: /es/home -> /home, /home -> /home
+  // Source: /es/home -> /home, /home -> /home
   const basePath = currentPath.replace(/^\/es/, '').replace(/^\/en/, '') || '/';
   const sectionPath = basePath === '/' ? '/home' : basePath;
   return {

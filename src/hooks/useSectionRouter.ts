@@ -12,14 +12,16 @@ export const useSectionRouter = (
   const [activeSection, setActiveSection] = useState<string>(initialSection);
 
   /**
-   * Get section from URL: /home, /mission, /es/home -> home, mission, home
+   * Get section from URL: /, /home, /mission, /es/home -> home, home, mission, home
    */
   const getSectionFromUrl = useCallback((): string => {
     if (typeof window === 'undefined') return 'home';
     
     const path = window.location.pathname;
     const parts = path.split('/').filter(Boolean);
-    // Only Spanish has a prefix: /es/home -> parts[1]; /home -> parts[0]
+    // Source: /, /home, /mission, /es/home -> home, home, mission, home
+    if (!path || path === '/' || parts.length === 0) return 'home';
+    // Only Spanish has prefix: /es/home -> parts[1]
     if (parts[0] === 'es' && parts.length > 1) return parts[1];
     if (parts[0] && parts[0] !== 'en') return parts[0]; // inglés: /home, /mission
     return parts[1] || 'home'; // /en/home (legacy) -> home
